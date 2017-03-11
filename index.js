@@ -91,29 +91,46 @@ new Cli({
     }).then(()=>{
       return Promise.mapSeries(config.static, (account) => {
         let loginNeeded = !account.token;
+
         if (loginNeeded) {
           console.log("Retrieving token for account " + account.name);
           let user = new SteamUser();
 
-          user.on('loginKey', (data) => {
-            account.token = data.key;
+          return new Promise((res, err) => {
+            user.once('loginKey', (data) => {
+              account.token = data.key;
+
+              debug('Account ' + account.name + ' received token ' + account.token + '.');
+              // TODO: Save token
+
+              user.logOff();
+              let app = new App(account.name, account.token);
+              app.initThirdPartyClient().then(() => {
+                res(app);
+              }).catch((ex) => {
+                err(ex);
+              });
+            });
+            user.once('error', (data) => {
+              err(data.err);
+            });
+            user.logOn({
+              accountName: account.name,
+              logonID: 12345,
+              machineName: 'Matrix Puppet-bridge',
+              rememberPassword: true,
+            });
           });
-          user.logOn({
-            accountName: account.name,
-            logonID: 12345,
-            machineName: 'Matrix Puppet-bridge',
-            rememberPassword: true,
+        } else {
+          const app = new App(account.name, account.token);
+          return app.initThirdPartyClient().then(() => {
+            debug('Account ' + account.name + ' added.');
+            return app;
+          }).catch(err=> {
+            debug('Failed to init account ' + account.name, err.message);
+            return app;
           });
         }
-
-        const app = new App(account.name, account.token);
-        return app.initThirdPartyClient().then(() => {
-          debug('Account ' + account.name + ' added.');
-          return app;
-        }).catch(err=> {
-          debug('Failed to init account ' + account.name, err.message);
-          return app;
-        });
       });
     }).then(()=>{
       console.log('Matrix-side listening on port %s', port);
