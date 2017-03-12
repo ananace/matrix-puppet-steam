@@ -1,14 +1,9 @@
 {
-  "slack": [{
-    "team_name": "<slack team name>",
-    "user_access_token": "<slack 'test' token>"
-  }],
-  "registrationPath": "slack-registration.yaml",
-  "port": 8092,
+  "port": 31456,
   "bridge": {
-    "homeserverUrl":"https://synapse.keyvan.pw",
-    "domain": "synapse.keyvan.pw",
-    "registration": "slack-registration.yaml"
+    "homeserverUrl":"https://matrix.example.com:8448",
+    "domain": "matrix.example.com",
+    "registration": "steam-registration.yaml"
   }
 }
 

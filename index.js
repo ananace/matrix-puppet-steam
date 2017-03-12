@@ -13,8 +13,9 @@ const App = require('./app');
 
 new Cli({
   port: config.port,
-  registrationPath: config.registrationPath,
+  registrationPath: config.bridge.registration,
   generateRegistration: function(reg, callback) {
+    // TODO: Multi-account
     puppet.associate().then(()=>{
       reg.setId(AppServiceRegistration.generateToken());
       reg.setHomeserverToken(AppServiceRegistration.generateToken());
