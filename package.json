@@ -2,8 +2,11 @@
   "name": "matrix-puppet-steam",
   "version": "0.0.0",
   "description": "Puppeting Matrix bridge for Steam accounts",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "prepare": "tsc",
+    "start": "DEBUG=matrix-puppet:* node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,41 +27,11 @@
   },
   "homepage": "https://github.com/ace13/matrix-puppet-steam#readme",
   "dependencies": {
-    "matrix-puppet-bridge": "^1.9.1",
+    "matrix-puppet-bridge": "^2.0.0",
     "steam-user": "^3.19.1"
   },
   "devDependencies": {
-    "eslint": "^3.12.2"
-  },
-  "eslintConfig": {
-    "env": {
-      "es6": true,
-      "node": true
-    },
-    "extends": "eslint:recommended",
-    "rules": {
-      "no-console": 0,
-      "indent": [
-        "error",
-        2,
-        {
-          "SwitchCase": 1
-        }
-      ],
-      "linebreak-style": [
-        "error",
-        "unix"
-      ],
-      "semi": [
-        "error",
-        "always"
-      ],
-      "no-unused-vars": [
-        "error",
-        {
-          "argsIgnorePattern": "^_"
-        }
-      ]
-    }
+    "typescript": "^2.3.4",
+    "@types/node": "^8.0.14"
   }
 }
