@@ -4,7 +4,9 @@ import {
   download, entities,
   
   ThirdPartyPayload, ThirdPartyMessagePayload, ThirdPartyImageMessagePayload,
-  UserData, RoomData
+  UserData, RoomData,
+
+  ContactListUserData
 } from 'matrix-puppet-bridge';
 
 import { SteamUser } from 'steam-user';
@@ -14,11 +16,25 @@ export class Adapter extends ThirdPartyAdapter {
   public serviceName = 'Steam';
   private client : SteamUser = null;
 
-  startClient(): Promise<void> {
+  initClient(): Promise<void> {
     this.client = new SteamUser({
       promptSteamGuardCode: false // Should be possible to route to the client
     });
 
+    this.client.on('friendPersonasLoaded', () => {
+      this.puppetBridge.newUsers(this.client.users.values.map((f) => {
+        return <ContactListUserData>{
+          name: f.player_name,
+          userId: f.friendid.to_string(36),
+          avatarUrl: f.avatar_url_icon
+        };
+      }));
+    });
+
+    return Promise.resolve();
+  }
+
+  startClient(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.client.once('loggedOn', resolve);
       this.client.once('steamGuard', reject);
@@ -53,7 +69,7 @@ export class Adapter extends ThirdPartyAdapter {
         name: '',
         topic: '',
         avatarUrl: '',
-        isDirect: false,
+        isDirect: true,
       };
 
       resolve(payload);
